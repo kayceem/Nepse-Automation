@@ -2,6 +2,8 @@ from PIL import Image, ImageEnhance
 import pytesseract
 from time import sleep
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import Select
+
 
 
 pytesseract.pytesseract.tesseract_cmd = "D:\Apps\\Tesseract-OCR\\tesseract.exe"
@@ -15,18 +17,22 @@ class Tms:
 
     def get_screenshot(self):
         try:
-            captcha = self.browser.find_element(By.XPATH,"/html/body/app-root/app-login/div/div/div[2]/form/div[3]/div[2]/div/img")
-            captcha.screenshot('Captcha\captcha.png')
+            self.browser.find_element(By.XPATH,"/html/body/app-root/app-login/div/div/div[2]/form/div[3]/div[2]/div/img")
+            ele = self.browser.find_element(By.XPATH,"/html/body/app-root/app-login/div/div/div[2]/form/div[3]/div[2]")
+            self.browser.execute_script("document.body.style.zoom='150%'")
+            self.browser.execute_script('arguments[0].scrollIntoView({block: "center"});', ele)
+            self.browser.get_screenshot_as_file('Captcha\captcha.png')
+            self.browser.execute_script("document.body.style.zoom='100%'")
             return True
         except:
             return False
 
     def get_improve_image(self):
         factor = 2.25
-        box = (350, 110, 865, 300)
+        box = (215, 265, 415, 340)
         image = Image.open('Captcha\captcha.png')
 
-        sized_image = image.resize((1200, 400))
+        sized_image = image.resize((800, 600))
         cropped_image = sized_image.crop(box)
 
         # filter = ImageEnhance.Brightness(contrast_image)
@@ -107,6 +113,7 @@ class Tms:
                     sleep(1)
                     continue
                 except:
+                    print(f"TMS :: Captcha solved : {captcha}")
                     return True
 
     def set_order_book(self):
@@ -129,7 +136,8 @@ class Tms:
             self.browser.find_element(By.XPATH, "/html/body/app-root/tms/main/div/div/app-trade-book-history/app-trade-book-history-prime/div/div/kendo-grid/kendo-grid-toolbar/div[2]/div[2]/div/div[3]/button").click()
             self.browser.implicitly_wait(2)
             # click all
-            self.browser.find_element(By.XPATH, "/html/body/app-root/tms/main/div/div/app-trade-book-history/app-trade-book-history-prime/div/div/kendo-grid/kendo-pager/kendo-pager-page-sizes/select/option[6]").click()
+            option = Select(self.browser.find_element(By.XPATH, "/html/body/app-root/tms/main/div/div/app-trade-book-history/app-trade-book-history-prime/div/div/kendo-grid/kendo-pager/kendo-pager-page-sizes/select"))
+            option.select_by_value('All')
             sleep(1)
             return True
         except:
