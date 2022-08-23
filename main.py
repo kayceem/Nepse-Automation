@@ -10,20 +10,16 @@ from selenium import webdriver
 from selenium.webdriver.edge.options import Options
 from selenium.webdriver.edge.service import Service
 
+from fake_useragent import UserAgent
 
 DIR_PATH = os.getcwd()
 data_path = f"{DIR_PATH}\Data"
 PATH = f"{DIR_PATH}\Edge Driver\msedgedriver.exe"
 options = ['Y','YES']
 working_week_days = ['0','1','2','3','4','6']
-working_time = ['10','11','12','01','02','03']
+working_time = ['10','11','12','13','14','15']
 
-ser = Service(PATH)
-option = Options()
-option.use_chromium = True
-option.add_experimental_option('excludeSwitches', ['enable-logging'])
-option.add_argument('--disable-extensions')
-option.add_argument('--disable-gpu')
+
 
 
 def get_data_from_tms(browser, start_date, end_date):
@@ -110,8 +106,24 @@ def add_to_nepsealpha(browser, data, ID):
 
 def main():
     today = datetime.today().strftime('%Y-%m-%d')
-    current_time = datetime.today().strftime('%I')
+    current_time = datetime.today().strftime('%H')
     week_day = str(datetime.today().weekday())
+
+    ua = UserAgent()
+    userAgent = ua.random
+
+    ser = Service(PATH)
+    option = Options()
+    option.use_chromium = True
+    option.add_argument(f'user-agent={userAgent}')
+    option.add_experimental_option('excludeSwitches', ['enable-logging'])
+    option.add_argument('--disable-extensions')
+    option.add_argument('--disable-gpu')
+    option.add_argument('headless')
+
+    # option.add_argument('headless')
+
+    browser = webdriver.Edge(service=ser, options=option)
 
     # bonus_data = get_data_from_meroshare(browser)
     # bonus_data = read_meroshare_data()
@@ -154,14 +166,9 @@ def main():
             end_date = today
         if start_date > end_date:
             start_date = end_date
-
-        browser = webdriver.Edge(service=ser, options=option)
-        browser.minimize_window()
         tms_data = get_data_from_tms(browser, start_date, end_date)
-        browser.quit()
-    
-    option.add_argument('headless')
-    browser = webdriver.Edge(service=ser, options=option)
+
+
 
     if not tms_data:
         print('No data to add!')
@@ -177,7 +184,7 @@ def main():
 
     try:
         ID = int(input('Enter nepsealpha id: '))
-        if len(str(ID)) != 5:
+        if ID%100000 != ID:
             raise Exception
         ID = str(ID)
     except:
