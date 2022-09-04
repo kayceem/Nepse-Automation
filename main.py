@@ -1,6 +1,7 @@
 import os
 import time
 from datetime import datetime
+from pathlib import Path
 
 from nepsetms import Tms
 from nepsealpha import NepseAlpha
@@ -14,7 +15,10 @@ from fake_useragent import UserAgent
 
 DIR_PATH = os.getcwd()
 data_path = f"{DIR_PATH}\Data"
-PATH = f"{DIR_PATH}\Edge Driver\msedgedriver.exe"
+
+DRIVER_PATH = Path(__file__).parents[2]
+PATH = f"{DRIVER_PATH}\Driver\msedgedriver.exe"
+
 options = ['Y','YES']
 working_week_days = ['0','1','2','3','4','6']
 working_time = ['10','11','12','13','14','15']
@@ -119,9 +123,9 @@ def main():
     option.add_experimental_option('excludeSwitches', ['enable-logging'])
     option.add_argument('--disable-extensions')
     option.add_argument('--disable-gpu')
+    option.add_argument('--window-size=900,600')
     option.add_argument('headless')
 
-    # option.add_argument('headless')
 
     browser = webdriver.Edge(service=ser, options=option)
 
@@ -177,6 +181,7 @@ def main():
 
     data = tms_data + bonus_data
     data = sorted(data, key=lambda x: x[4]+x[1])
+    write_data(data)
 
     print()
     print(f"Total Shares: {len(data)}")
@@ -184,9 +189,6 @@ def main():
 
     try:
         ID = int(input('Enter nepsealpha id: '))
-        if ID%100000 != ID:
-            raise Exception
-        ID = str(ID)
     except:
         ID = '50136'
     os.system('cls')
@@ -207,7 +209,6 @@ def main():
     print()
     print(f"Execution time: {minutes:.0f} minutes {seconds:.1f} seconds")
     print()
-    write_data(data)
     write_logs(logs)
     return
 
