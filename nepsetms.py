@@ -117,14 +117,14 @@ class Tms:
                     return True
 
     def set_order_book(self):
-        self.browser.get('https://tms01.nepsetms.com.np/tms/me/trade-book-history')
-        sleep(1)
+        # self.browser.get('https://tms01.nepsetms.com.np/tms/me/trade-book-history')
+        # sleep(1)
         try:
-            # # click order management
-            # self.browser.find_element(By.XPATH, "/html/body/app-root/tms/app-menubar/aside/nav/ul/li[11]/a").click()
-            # self.browser.implicitly_wait(1)
-            # # click historic order book
-            # self.browser.find_element(By.XPATH, "/html/body/app-root/tms/app-menubar/aside/nav/ul/li[11]/ul/li[2]/a").click()
+            # click order management
+            self.browser.find_element(By.XPATH, "/html/body/app-root/tms/app-menubar/aside/nav/ul/li[11]/a").click()
+            self.browser.implicitly_wait(1)
+            # click historic order book
+            self.browser.find_element(By.XPATH, "/html/body/app-root/tms/app-menubar/aside/nav/ul/li[11]/ul/li[2]/a").click()
 
             self.browser.implicitly_wait(6)
             # set start date and end date
